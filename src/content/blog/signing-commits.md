@@ -1,6 +1,7 @@
 ---
 author: Sermeus Steven
 pubDatetime: 2024-04-14T16:49:47.400Z
+modDatetime: 2024-04-14T17:45:47.400Z
 title: How to sign commits with GPG key
 slug: signing-commits
 featured: true
@@ -45,7 +46,7 @@ CERTIFY_PASS=$(LC_ALL=C tr -dc 'A-Z1-9' < /dev/urandom | \
   cut -c2- | tr " " "-" | head -1) ; echo "$CERTIFY_PASS"
 ```
 
-Now you can generate the GPG key pair.
+Now you can generate the GPG key pair. We will use RSA 4096 as the encryption algorithm and set the key to never expire. If you are concerned about the security of your key, you can choose a different encryption algorithm or set an expiration date for the key.
 
 ```bash
 gpg --batch --passphrase "$CERTIFY_PASS" \
