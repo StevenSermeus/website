@@ -20,6 +20,8 @@ description: Passwords are a pain to manage. Learn how I handle my passwords to 
 
 Passwords are a pain to manage. You need to remember them, keep them secure, and make sure they are unique for each account. In this article, I will explain how I handle my passwords to keep them secure and easy to access. And for the developers among us, I will show you how to use a password manager from the command line.
 
+## Table of contents
+
 # Password Manager
 
 There are many password managers available, like 1Password, LastPass, and Bitwarden. Some of them are self-hostable, like Bitwarden, and others are not. I prefer to use a self-hostable password manager because I want to have full control over my passwords. The solution I use is called [pass](https://www.passwordstore.org/). Pass uses GPG to encrypt your passwords and stores them in a simple directory structure. You can use Git to sync your passwords between devices.
