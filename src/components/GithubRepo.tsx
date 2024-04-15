@@ -24,9 +24,6 @@ function GithubRepo() {
       );
   }, []);
 
-  useEffect(() => {
-    console.log(repos);
-  }, [repos]);
   return (
     <>
       <ul>
