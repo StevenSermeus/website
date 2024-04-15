@@ -1,0 +1,304 @@
+---
+author: Sermeus Steven
+pubDatetime: 2024-04-16T10:00:00.400Z
+title: Input validation in TypeScript
+slug: input-validation
+featured: true
+draft: false
+tags:
+  - Security
+  - TypeScript
+  - Validation
+  - React
+  - zod
+description: Users can be unpredictable. Learn how to validate user input in TypeScript to prevent security vulnerabilities.
+---
+
+import FormDemo from "@components/FormDemo";
+
+# Introduction
+
+Users can be unpredictable. They can enter anything they want in your application, and you need to be prepared for it. One way to protect your application from security vulnerabilities is to validate the input from the user. In this article, I will show you how to validate user input in TypeScript.
+
+## Table of contents
+
+# What you need to protect against
+
+When you are building an application, you need to protect against different types of attacks. Here are some of the most common attacks you need to protect against:
+
+- SQL Injection
+- Cross-Site Scripting (XSS)
+- Command Injection
+- Path Traversal
+
+To protect against these attacks, you need to validate the input from the user. You need to make sure that the input is what you expect it to be and that it does not contain any malicious code.
+
+# Frontend validation
+
+You can validate the input from the user in different places in your application. Your first line of defense should be the client-side validation. You can use HTML5 input types and attributes to validate the input from the user. For example, you can use the `required` attribute to make sure that a field is not empty.
+
+```html
+<input type="text" name="username" required />
+```
+
+This is a good start, but it's not enough. You also need to validate the input on that the user sends to the server. You can do it in the frontend to prevent unnecessary requests to the server, but you should always validate the input on the server as well. You can use a library like [Joi](https://joi.dev/) or [Yup](https://www.npmjs.com/package/yup) but my personal favorite is [zod](https://zod.dev/) because it is simple, easy to use and has a great typescript integration. Zod does integrate well with [react-hook-form](https://react-hook-form.com/). In this article, you will learn to build a simple login form like this one that check if the email is a valid email and the password is at least 10 characters long and contains at least one uppercase letter, one number and one special character.
+
+<FormDemo client:load />
+
+## Installation
+
+You need to install the following packages to use zod and react-hook-form:
+
+```bash
+npm install react-hook-form @hookform/resolvers zod
+```
+
+Your default components should look like this:
+
+```tsx
+import React from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+function FormDemo() {
+  return <div>FormDemo</div>;
+}
+
+export default FormDemo;
+```
+
+There is a lot of things we aren't using yet, but we will get there. First, let's create a schema for our form. We will use zod for this. You can validate the input to be an email by using the `.email()` method and the password to be at least 10 characters long with `.min(10)`. We also want the password to contain at least one uppercase letter, one number and one special character. We can achieve this with the `.regex()` method. The regex method can also be used to check for SQL injection or other malicious code. There are plenty of regex patterns available online to check for these things.
+
+```tsx
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z
+    .string()
+    .min(10)
+    .regex(/^(?=.*[A-Z])(?=.*\d)(?=.*[^\w\d\s]).*$/),
+});
+
+function FormDemo() {
+  return <div>FormDemo</div>;
+}
+
+export default FormDemo;
+```
+
+Now we can use the schema to validate the input from the user. We can use the `useForm` hook from `react-hook-form` to create a form with validation. We can pass the schema to the `useForm` hook with the `resolver` option. We can use the `register` function to register the input fields in the form. We can use the `errors` object to display the error messages to the user.
+
+```tsx
+import React from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z
+    .string()
+    .min(10)
+    .regex(/^(?=.*[A-Z])(?=.*\d)(?=.*[^\w\d\s]).*$/),
+});
+
+function FormDemo() {
+  const { register } = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  return (
+    <form>
+      <input {...register("email")} type="email" placeholder="Email" />
+      <input {...register("password")} type="password" placeholder="Password" />
+      <button type="submit">Submit</button>
+    </form>
+  );
+}
+
+export default FormDemo;
+```
+
+The last step is to handle the form submission. We can use the `handleSubmit` function from `react-hook-form` to handle the form submission. We can create a function that will be called when the form is submitted. We can use the `onSubmit` option to pass the function to the `handleSubmit` function. It's also possible to display the error messages to the user by using the `errors` object.
+
+```tsx
+import React from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z
+    .string()
+    .min(10)
+    .regex(/^(?=.*[A-Z])(?=.*\d)(?=.*[^\w\d\s]).*$/),
+});
+
+function FormDemo() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  function onSubmit(data: z.infer<typeof loginSchema>) {
+    alert(data.email);
+    alert(data.password);
+  }
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input {...register("email")} type="email" placeholder="Email" />
+      {errors.email && <p>{errors.email.message}</p>}
+      <input {...register("password")} type="password" placeholder="Password" />
+      {errors.password && <p>{errors.password.message}</p>}
+      <button type="submit">Submit</button>
+    </form>
+  );
+}
+
+export default FormDemo;
+```
+
+You can add some styles to the form to make it look better. I used tailwind for this.
+
+```tsx
+import React from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z
+    .string()
+    .min(10)
+    .regex(/^(?=.*[A-Z])(?=.*\d)(?=.*[^\w\d\s]).*$/),
+});
+
+function FormDemo() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  function onSubmit(data: z.infer<typeof loginSchema>) {
+    alert(data.email);
+    alert(data.password);
+  }
+
+  return (
+    <form className="w-full max-w-sm" onSubmit={handleSubmit(onSubmit)}>
+      <div className="mb-6 md:flex md:items-center">
+        <div className="md:w-1/3">
+          <label className="mb-1 block pr-4 font-bold text-gray-500 md:mb-0 md:text-right">
+            Email
+          </label>
+        </div>
+        <div className="md:w-2/3">
+          <input
+            className="w-full appearance-none rounded border-2 border-gray-200 bg-gray-200 px-4 py-2 leading-tight text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-none"
+            type="email"
+            placeholder="John Doe"
+            {...register("email")}
+          />
+        </div>
+        {errors.email && (
+          <span className="text-red-500">Email must be a valid email</span>
+        )}
+      </div>
+      <div className="mb-6 md:flex md:items-center">
+        <div className="md:w-1/3">
+          <label className="mb-1 block pr-4 font-bold text-gray-500 md:mb-0 md:text-right">
+            Password
+          </label>
+        </div>
+        <div className="md:w-2/3">
+          <input
+            className="w-full appearance-none rounded border-2 border-gray-200 bg-gray-200 px-4 py-2 leading-tight text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-none"
+            type="password"
+            placeholder="******************"
+            {...register("password")}
+          />
+        </div>
+        {errors.password && (
+          <span className="text-red-500">
+            Password must contain at least 10 characters, 1 uppercase letter, 1
+            number, and 1 special character
+          </span>
+        )}
+      </div>
+      <div className="md:flex md:items-center">
+        <div className="md:w-1/3"></div>
+        <div className="md:w-2/3">
+          <button
+            className="focus:shadow-outline rounded bg-purple-500 px-4 py-2 font-bold text-white shadow hover:bg-purple-400 focus:outline-none"
+            type="submit"
+          >
+            Sign Up
+          </button>
+        </div>
+      </div>
+    </form>
+  );
+}
+
+export default FormDemo;
+```
+
+And that's it! You have created a simple login form with validation in TypeScript. You can use this form as a starting point for your own forms. You can add more fields to the form and more validation rules to the schema. You can also add more styles to the form to make it look better. I hope this article was helpful to you. If you have any questions or comments, feel free to leave them below. Thank you for reading! 🚀
+
+# Backend validation
+
+A simple user will only use the form you provide, but a malicious user might not. He can bypass your frontend validation by forging the http request with tools like curl or postman. That's why you should always validate the input on the server as well. You can use the same schema you used in the frontend to validate the input on the server. Some libraries like [Trpc](https://trpc.io/) have built-in support for zod. You can use the `zod` method to validate the input from the user. But in this article, I will keep it simple and show you how to validate the input with express.
+
+The setup of express is out of the scope of this article, but you can find good tutorials on the internet. I would recommend you to search for a tutorial using typescript. Once the setup is done, you can create a new route to handle the form submission. You can use the same schema you used in the frontend
+
+```ts
+import express from "express";
+import { z } from "zod";
+
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z
+    .string()
+    .min(10)
+    .regex(/^(?=.*[A-Z])(?=.*\d)(?=.*[^\w\d\s]).*$/),
+});
+
+const app = express();
+
+app.post("/login", (req, res) => {
+  try {
+    const data = loginSchema.parse(req.body);
+    // Do something with the datas
+    res.status(200).json({ message: "Success" });
+  } catch (error) {
+    res.status(400).json({ error: error.errors });
+  }
+});
+```
+
+And that's it! You can simply parse the body of the request with the schema and send a response back to the user. You can also use the `zod` method to validate the query parameters or the headers of the request. I hope this article was helpful to you. You builded a simple login form with validation in TypeScript ! 🚀
+
+# Conclusion
+
+I hope this article has given you some insights into how to validate user input in TypeScript. You have learned how to validate the input from the user in the frontend and in the backend. You have also learned how to use zod to create a schema for your form. I didn't cover the SQLinjection and other malicious code in this article, but you can use the `.regex()` method to check for these things. Thank you for reading! 🚀
