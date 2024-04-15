@@ -33,12 +33,16 @@ function FormDemo() {
     <form className="w-full max-w-sm" onSubmit={handleSubmit(onSubmit)}>
       <div className="md:flex md:items-center mb-6">
         <div className="md:w-1/3">
-          <label className="md:text-right md:mb-0 mb-1 block pr-4 font-bold text-gray-500">
+          <label
+            className="md:text-right md:mb-0 mb-1 block pr-4 font-bold text-gray-500"
+            htmlFor="email"
+          >
             Email
           </label>
         </div>
         <div className="md:w-2/3">
           <input
+            id="email"
             className="w-full appearance-none rounded border-2 border-gray-200 bg-gray-200 px-4 py-2 leading-tight text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-none"
             type="email"
             placeholder="John Doe"
@@ -51,12 +55,16 @@ function FormDemo() {
       </div>
       <div className="md:flex md:items-center mb-6">
         <div className="md:w-1/3">
-          <label className="md:text-right md:mb-0 mb-1 block pr-4 font-bold text-gray-500">
+          <label
+            className="md:text-right md:mb-0 mb-1 block pr-4 font-bold text-gray-500"
+            htmlFor="password"
+          >
             Password
           </label>
         </div>
         <div className="md:w-2/3">
           <input
+            id="password"
             className="w-full appearance-none rounded border-2 border-gray-200 bg-gray-200 px-4 py-2 leading-tight text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-none"
             type="password"
             placeholder="******************"
