@@ -14,12 +14,11 @@ export async function getStaticPaths() {
   );
 
   const postsWithRT = await getPostsWithRT(posts);
-  const postResult = postsWithRT.map(post => ({
-    // make sure to replace posts with postsWithRT
-    params: { slug: post.slug },
-    props: { post },
+
+  return postsWithRT.map(post => ({
+    params: { slug: slugifyStr(post.data.title) },
+    props: post,
   }));
-  return postResult;
 }
 
 export const GET: APIRoute = async ({ props }) =>

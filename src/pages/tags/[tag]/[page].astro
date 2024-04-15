@@ -17,15 +17,20 @@ export async function getStaticPaths() {
 
   const tags = getUniqueTags(posts);
 
-  return tags.flatMap(async ({ tag, tagName }) => {
-    const tagPosts = await getPostsByTag(posts, tag);
-    const totalPages = getPageNumbers(tagPosts.length);
+  const result = await Promise.all(
+    tags.flatMap(async ({ tag, tagName }) => {
+      const tagPosts = await getPostsByTag(posts, tag);
+      const totalPages = getPageNumbers(tagPosts.length);
 
-    return totalPages.map(page => ({
-      params: { tag, page },
-      props: { tag, tagName },
-    }));
-  });
+      return totalPages.map(page => ({
+        params: { tag, page },
+        props: { tag, tagName },
+      }));
+    })
+  );
+
+  const response = result.flat();
+  return response;
 }
 
 const { page } = Astro.params;
