@@ -15,7 +15,7 @@ tags:
   - push
   - commit
   - français
-description: mldsqkdmq
+description: Un guide simple pour utiliser Git au quotidien.
 ---
 
 # Git for day-to-day use
